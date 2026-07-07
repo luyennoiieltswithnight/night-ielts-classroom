@@ -1,0 +1,6 @@
+{
+  "name": "Study English with Mr. Night",
+  "description": "AI-powered vocabulary extraction and learning system for Vietnamese learners of English, featuring spaced repetition and topic-based organization.",
+  "requestFramePermissions": ["microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,133 @@
+{
+  "entities": {
+    "Topic": {
+      "title": "Topic",
+      "description": "A collection of vocabulary items grouped by a common theme.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "The name of the topic." },
+        "description": { "type": "string", "description": "A brief description of the topic." },
+        "wordCount": { "type": "number", "description": "Total number of words in this topic." },
+        "learnedCount": { "type": "number", "description": "Number of words marked as learned or mastered." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "When the topic was created." },
+        "status": { "type": "string", "enum": ["active", "completed"], "description": "Current status of the topic." }
+      },
+      "required": ["name", "wordCount", "learnedCount", "createdAt", "status"]
+    },
+    "VocabularyItem": {
+      "title": "VocabularyItem",
+      "description": "An individual word or phrase to be learned.",
+      "type": "object",
+      "properties": {
+        "english": { "type": "string", "description": "The English word or phrase." },
+        "vietnamese": { "type": "string", "description": "The Vietnamese translation." },
+        "ipa": { "type": "string", "description": "IPA pronunciation." },
+        "partOfSpeech": { "type": "string", "description": "Noun, Verb, Adjective, etc." },
+        "simpleEnglishMeaning": { "type": "string", "description": "A simple definition in English." },
+        "usageContext": { "type": "string", "description": "Explanation of when to use the word." },
+        "examples": { "type": "array", "items": { "type": "string" }, "description": "Natural example sentences." },
+        "topicId": { "type": "string", "description": "ID of the parent topic." },
+        "learnedStatus": { "type": "string", "enum": ["new", "learning", "mastered"], "description": "Current learning state." },
+        "nextReviewDate": { "type": "string", "format": "date-time", "description": "When the item is due for SRS review." },
+        "interval": { "type": "number", "description": "SRS interval in days." },
+        "easeFactor": { "type": "number", "description": "SRS ease factor." },
+        "repetitionCount": { "type": "number", "description": "Number of successful SRS repetitions." },
+        "lastReviewedAt": { "type": "string", "format": "date-time", "description": "When the item was last reviewed." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "When the item was created." }
+      },
+      "required": ["english", "vietnamese", "ipa", "partOfSpeech", "simpleEnglishMeaning", "usageContext", "examples", "topicId", "learnedStatus", "nextReviewDate", "interval", "easeFactor", "repetitionCount", "createdAt"]
+    },
+    "MicroIdeaChain": {
+      "title": "MicroIdeaChain",
+      "description": "A sequence of connected spoken phrases for speaking practice.",
+      "type": "object",
+      "properties": {
+        "topic": { "type": "string", "description": "The topic of the chain (e.g., Accommodation)." },
+        "title": { "type": "string", "description": "Optional title for the chain." },
+        "ideas": { 
+          "type": "array", 
+          "items": { 
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "phrase": { "type": "string" },
+              "meaningVi": { "type": "string" },
+              "exampleEn": { "type": "string" }
+            }
+          }
+        },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["topic", "ideas", "createdAt", "updatedAt"]
+    },
+    "SpeakingPack": {
+      "title": "SpeakingPack",
+      "description": "A custom speaking lesson level pack.",
+      "type": "object",
+      "properties": {
+        "label": { "type": "string" },
+        "desc": { "type": "string" },
+        "icon": { "type": "string" },
+        "createdBy": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["label", "createdBy", "createdAt"]
+    },
+    "SpeakingFolder": {
+      "title": "SpeakingFolder",
+      "description": "A sub-folder inside a speaking level pack for organizing lessons.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "packId": { "type": "string" },
+        "createdBy": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["name", "packId", "createdBy", "createdAt"]
+    },
+    "SpeakingLesson": {
+      "title": "SpeakingLesson",
+      "description": "A speaking lesson containing learning items.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "level": { "type": "string" },
+        "folderId": { "type": "string" },
+        "createdBy": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["title", "level", "createdBy", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}/topics": {
+      "schema": { "$ref": "Topic" },
+      "description": "User's vocabulary topics."
+    },
+    "/users/{userId}/vocabulary": {
+      "schema": { "$ref": "VocabularyItem" },
+      "description": "User's vocabulary items."
+    },
+    "/users/{userId}/microIdeaChains": {
+      "schema": { "$ref": "MicroIdeaChain" },
+      "description": "User's speaking practice phrase chains."
+    },
+    "sharedTopics": {
+      "schema": "Topic",
+      "description": "Topics shared by the teacher with students"
+    },
+    "speakingPacks": {
+      "schema": "SpeakingPack",
+      "description": "Custom speaking lesson level packs."
+    },
+    "speakingFolders": {
+      "schema": "SpeakingFolder",
+      "description": "Custom folders organizing speaking lessons inside packs."
+    },
+    "speakingLessons": {
+      "schema": "SpeakingLesson",
+      "description": "Speaking lessons with sentence chunks."
+    }
+  }
+}

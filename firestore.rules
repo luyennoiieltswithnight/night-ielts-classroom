@@ -1,0 +1,93 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Connectivity test path
+    match /test/connection {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    // Helper functions
+    function isSignedIn() { return request.auth != null; }
+    function isVerified() { return isSignedIn() && request.auth.token.email_verified == true; }
+    function getEmail() {
+      return request.auth.token.get('email', '').lower();
+    }
+    function isAdmin() { 
+      return isVerified() && request.auth.token.email == "nightruan31@gmail.com"; 
+    }
+    
+    function isValidId(id) { return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); }
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+
+    // User Registry & Profile
+    match /users/{userId} {
+      allow list: if isAdmin();
+      allow get: if userId.matches('^guest-.*') || userId == "local-guest-user" || (request.auth != null && request.auth.uid == userId) || isAdmin();
+      allow create, update: if (userId.matches('^guest-.*') || userId == "local-guest-user" || (request.auth != null && request.auth.uid == userId)) && 
+        incoming().keys().hasAll(['uid', 'email', 'displayName']) &&
+        incoming().uid == userId &&
+        (incoming().email == "guest@example.com" || (isSignedIn() && incoming().email == request.auth.token.email));
+
+      // Topics - Owner access
+      match /topics/{topicId}/{rest=**} {
+        allow read, write: if userId.matches('^guest-.*') || userId == "local-guest-user" || (request.auth != null && request.auth.uid == userId);
+      }
+
+      // Topics - Shared access fallback
+      match /topics/{topicId}/{rest=**} {
+        allow read: if request.auth != null && (
+          (exists(/databases/$(database)/documents/sharedTopics/$(topicId)) && 
+           get(/databases/$(database)/documents/sharedTopics/$(topicId)).data.authorizedEmails.hasAny([getEmail()])) ||
+          (get(/databases/$(database)/documents/users/$(userId)/topics/$(topicId)).data.get('authorizedEmails', []).hasAny([getEmail()]))
+        );
+      }
+
+      // Other sub-collections (private - vocabulary, microIdeaChains, topicFolders)
+      match /{allData=**} {
+        allow read, write: if userId.matches('^guest-.*') || userId == "local-guest-user" || (request.auth != null && request.auth.uid == userId);
+      }
+    }
+
+    match /sharedTopics/{topicId} {
+      allow read: if true;
+      allow create: if isSignedIn() && (
+        (isAdmin()) ||
+        (incoming().sharedBy == request.auth.uid && exists(/databases/$(database)/documents/users/$(request.auth.uid)/topics/$(topicId)))
+      );
+      allow update: if isSignedIn() && (existing().sharedBy == request.auth.uid || isAdmin());
+      allow delete: if isSignedIn() && (existing().sharedBy == request.auth.uid || isAdmin());
+    }
+
+    match /sharedTopicFolders/{folderId} {
+      allow read: if true;
+      allow create: if isSignedIn() && (
+        (isAdmin()) ||
+        (incoming().sharedBy == request.auth.uid && exists(/databases/$(database)/documents/users/$(request.auth.uid)/topicFolders/$(folderId)))
+      );
+      allow update: if isSignedIn() && (existing().sharedBy == request.auth.uid || isAdmin());
+      allow delete: if isSignedIn() && (existing().sharedBy == request.auth.uid || isAdmin());
+    }
+
+    match /speakingLessons/{lessonId} {
+      allow read: if true;
+      allow write: if isSignedIn();
+    }
+
+    match /speakingPacks/{packId} {
+      allow read: if true;
+      allow write: if isSignedIn();
+    }
+
+    match /speakingFolders/{folderId} {
+      allow read: if true;
+      allow write: if isSignedIn();
+    }
+  }
+}

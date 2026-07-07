@@ -1,0 +1,148 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Nunito", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  
+  /* Pastel Theme Colors */
+  --color-pastel-green-50: #f0fdf4;
+  --color-pastel-green-100: #dcfce7;
+  --color-pastel-green-200: #bbf7d0;
+  --color-pastel-green-500: #22c55e;
+  --color-pastel-green-600: #16a34a;
+  
+  --color-pastel-blue-50: #eff6ff;
+  --color-pastel-blue-100: #dbeafe;
+  --color-pastel-blue-200: #bfdbfe;
+  --color-pastel-blue-500: #3b82f6;
+  --color-pastel-blue-600: #2563eb;
+  
+  --color-pastel-pink-50: #fff1f2;
+  --color-pastel-pink-100: #ffe4e6;
+  --color-pastel-pink-200: #fecdd3;
+  --color-pastel-pink-500: #f43f5e;
+  --color-pastel-pink-600: #e11d48;
+  
+  --color-pastel-purple-50: #faf5ff;
+  --color-pastel-purple-100: #f3e8ff;
+  --color-pastel-purple-200: #e9d5ff;
+  --color-pastel-purple-300: #d8b4fe;
+  --color-pastel-purple-400: #c084fc;
+  --color-pastel-purple-500: #a855f7;
+  --color-pastel-purple-600: #9333ea;
+  --color-pastel-purple-700: #7e22ce;
+  --color-pastel-purple-800: #6b21a8;
+  --color-pastel-purple-900: #581c87;
+
+  --color-pastel-yellow-50: #fefce8;
+  --color-pastel-yellow-100: #fef9c3;
+  --color-pastel-yellow-200: #fef08a;
+  --color-pastel-yellow-500: #eab308;
+  --color-pastel-yellow-600: #ca8a04;
+
+  --color-pastel-orange-50: #fff7ed;
+  --color-pastel-orange-100: #ffedd5;
+  --color-pastel-orange-200: #fed7aa;
+  --color-pastel-orange-500: #f97316;
+  --color-pastel-orange-600: #ea580c;
+}
+
+@layer base {
+  body {
+    @apply bg-[#fafafa] text-gray-800;
+  }
+}
+
+@layer utilities {
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+  .preserve-3d {
+    transform-style: preserve-3d;
+  }
+  .backface-hidden {
+    backface-visibility: hidden;
+  }
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #e2e8f0;
+    border-radius: 10px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #cbd5e1;
+  }
+
+  .lesson-markdown p {
+    margin-bottom: 1.5rem;
+  }
+  .lesson-markdown p:last-child {
+    margin-bottom: 0;
+  }
+  .lesson-markdown strong {
+    @apply font-black text-gray-900 bg-pastel-yellow-100 px-1 rounded-sm;
+  }
+  .lesson-markdown em {
+    @apply text-pastel-purple-600 font-bold not-italic;
+  }
+
+  /* Table Styles for Lessons */
+  .lesson-markdown table {
+    @apply w-full border-collapse my-8 bg-white rounded-3xl shadow-xl border-2 border-gray-50/50 table-auto;
+    min-width: 100%;
+  }
+  .lesson-markdown th {
+    @apply bg-gray-50/80 text-gray-400 font-black uppercase tracking-widest text-[9px] p-5 text-left border-b-2 border-gray-100/50;
+  }
+  .lesson-markdown td {
+    @apply p-6 text-xl font-bold text-gray-700 border-b border-gray-50 leading-snug;
+  }
+  .lesson-markdown tr:last-child td {
+    @apply border-none;
+  }
+  .lesson-markdown tr:hover td {
+    @apply bg-pastel-purple-50/30 text-pastel-purple-900;
+  }
+
+  /* List & Exercise Styling */
+  .lesson-markdown blockquote {
+    @apply border-l-8 border-pastel-purple-400 bg-pastel-purple-50/50 p-8 rounded-r-3xl my-8 font-bold text-pastel-purple-900 text-2xl leading-relaxed;
+  }
+  .lesson-markdown h1, .lesson-markdown h2, .lesson-markdown h3 {
+    @apply font-black text-gray-900 tracking-tighter mb-6 mt-10;
+  }
+  .lesson-markdown h1 { @apply text-4xl; }
+  .lesson-markdown h2 { @apply text-3xl; }
+  .lesson-markdown h3 { @apply text-2xl; }
+
+  .lesson-markdown ul {
+    @apply space-y-4 my-8 list-none;
+  }
+  .lesson-markdown ul li {
+    @apply relative pl-10 py-2 text-xl text-gray-600 font-semibold;
+  }
+  .lesson-markdown ul li::before {
+    @apply content-[''] absolute left-0 top-4 w-4 h-4 bg-pastel-purple-400 rounded-full shadow-lg shadow-pastel-purple-200;
+  }
+  
+  /* Numbered List for Exercises */
+  .lesson-markdown ol {
+    @apply space-y-6 my-10 list-none;
+    counter-reset: counter-res;
+  }
+  .lesson-markdown ol li {
+    @apply flex items-start gap-6 p-8 bg-white border-2 border-gray-50 rounded-[2.5rem] shadow-sm hover:border-pastel-purple-200 transition-all relative;
+    counter-increment: counter-res;
+  }
+  .lesson-markdown ol li::before {
+    @apply content-[counter(counter-res)] static w-12 h-12 bg-pastel-purple-600 text-white flex-shrink-0 flex items-center justify-center rounded-2xl font-black text-xl shadow-lg shadow-pastel-purple-100;
+  }
+  .lesson-markdown ol li > *:not(::before) {
+    @apply flex-1 min-w-0;
+  }
+}
